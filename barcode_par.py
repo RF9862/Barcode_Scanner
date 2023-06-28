@@ -3,7 +3,6 @@ import cv2, gc
 import pytesseract
 from pytesseract import Output
 import numpy as np
-from keras.models import load_model
 from skimage.metrics import structural_similarity as ssim
 import json
 import os, sys
@@ -382,7 +381,7 @@ def main_parse(filename, template_path, temp_imgs):
         total_img_y0 = int(QR2[2][1]+QR2[2][3]/2)-115
         total_img = image[total_img_y0:total_img_y0+total_img_h, total_img_x0:total_img_x0+total_img_w].copy()
     else:
-        json_file = template_path/"template.json"
+        json_file = resource_path('config/template.json')
         with open(json_file, "r") as f:
             xyxy = json.load(f)
         total_img = image[xyxy["y0"]:xyxy["y1"], xyxy["x0"]:xyxy["x1"]].copy()
