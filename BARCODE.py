@@ -5,11 +5,10 @@ import sys, os, getpass, shutil
 from threading import Thread
 import uuid
 from AESCipher import AESCipher
-import requests, json, os
+import json, os
 import openpyxl
 import pandas
 from main_barcode import barcode
-import ctypes
 
 #uuid.getnode()
 class MainPage(QMainWindow):
@@ -29,9 +28,7 @@ class MainPage(QMainWindow):
         self.pbar_tab2.valueChanged.connect(self.onChangeValue2)
         self.lnk_tab2.clicked.connect(self.onClickLblTab2)
         self.single_done2.connect(self.progress2)
-        
         # winScale = ctypes.windll.shcore.GetScaleFactorForDevice(0) / 100 # get windows scale
-        
         # self.btn_process2.setEnabled(False)
 
     def openOutput(self,path): 
@@ -46,8 +43,8 @@ class MainPage(QMainWindow):
             self.configPath = self.configPath[0]
             self.le_tab2.setText(self.configPath)   
         except: pass
-        print("okay")
     def btnProcessFile2(self):
+        self.btn_process2.setEnabled(False)
         t1=Thread(target=self.Operation2)
         t1.start()
         # t1.join()
@@ -81,14 +78,18 @@ class MainPage(QMainWindow):
             wb.save(sourcePath)
             try: os.remove(tempSourcePath)
             except: pass   
+            dst_dir = os.path.join(out, 'input') 
+            makedir(dst_dir)
             for imd in img_list:
-                try: shutil.copytree(imd, os.path.join(out, 'inputs', imd.split('\\')[-1]))
-                except: pass                     
-            return True              
+                try: 
+                    imgs = [f for f in os.listdir(imd) if (f.split('.')[-1].lower() in ['png','jpg', 'tif'])]
+                    for img in imgs:
+                        shutil.copy(os.path.join(imd, img), os.path.join(dst_dir, img))  
+                except: pass              
+        
+            return True         
         else:
             return False   
-
-        return None    
 
     def Operation2(self):
         try:
@@ -100,6 +101,7 @@ class MainPage(QMainWindow):
             makedir(self.outputPath)
         except: 
             self.lbl1_tab2.setText("Wanring: Please Select Config File Exactly")
+            self.btn_process2.setEnabled(True)
             return None        
         # wb_obj = openpyxl.load_workbook(sourcePath)
         # sheet_obj = wb_obj.active
@@ -125,6 +127,7 @@ class MainPage(QMainWindow):
         self.lnk_tab2.setEnabled(True)
         self.lnk_tab2.setText("Go Output Folder")
         self.lbl1_tab2.setText("Done!") 
+        self.btn_process2.setEnabled(True)
 
     def onChangeValue2(self,val):
         self.pbar_tab2.setFormat(str(self.cnt2) + '/' + str(self.total2))
@@ -217,12 +220,7 @@ makedir(logPath)
 try: shutil.copytree("config", os.path.join(logPath, 'config'))
 except: pass
 
-severURL = 'http://127.0.0.1:8001'
-# window()
-
 if not validate():
     windowValidate()
 else:
     window()
-
-#window()

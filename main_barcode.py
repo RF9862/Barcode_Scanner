@@ -62,16 +62,10 @@ def main(main_self, data_dirs, output_dir, err_dir, cropPathBody, save_path):
     for cnt, im in enumerate(img_list):
         im = im.replace('\\', '/')
         
-        # if main_self:
-        #     main_self.cnt2=cnt+1
-        #     main_self.total2=len(img_list)
-        #     main_self.single_done2.emit()
-            
-        # file_name = os.path.join(data_dir, im)
         try:
             imBody = im.split('/')[-1]
             vals.append([main_parse(im, template_path, temp_imgs), imBody])
-            success_lists.append(im)
+            success_lists.append(output_dir.replace('\\', '/') + "/input/" + im.split('/')[-1])
             main_self.cnt2 = int(main_self.total2/5/len(img_list) * (cnt + 1)) 
             main_self.single_done2.emit()
         except Exception as e:
@@ -82,8 +76,6 @@ def main(main_self, data_dirs, output_dir, err_dir, cropPathBody, save_path):
         gc.collect()
 
     labels = getTotalValue(weights=weights, source=temp_imgs, conf_thres=0.3, project=Path(output_dir)/"detect", main_self=main_self)
-    # batchName = output_dir.split('\\')[-1]
-    # save_path = os.path.join(output_dir, f"barcode_{batchName}.xlsx")
     post_processing(vals, labels, success_lists, temp_imgs, save_path)
     print(f"Success: {len(img_list)-fail_cnt}, Failed: {fail_cnt}")
     # logger.info(f"Success: {len(img_list)-fail_cnt}, Failed: {fail_cnt}")

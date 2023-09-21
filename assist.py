@@ -186,7 +186,7 @@ def getTotalValue(
                         vid_writer[i] = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'mp4v'), fps, (w, h))
                     vid_writer[i].write(im0)
 
-        ## latex recognition
+        ## applying model.h5
         digit_cnt = len(box)
         try:
             xc = [int((bo[0]+bo[2])/2) for bo in box]

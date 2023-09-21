@@ -21,14 +21,16 @@ def post_processing(vals, labels, filesNames,  temp_imgs, save_path):
         pre_rows = 1
         ws.cell(row=pre_rows, column=1).value = "FILE_NAME"
         ws.cell(row=pre_rows, column=1).font = Font(bold=True)
-        ws.cell(row=pre_rows, column=2).value = "QRCODE"
+        ws.cell(row=pre_rows, column=2).value = "QRCODE1"
         ws.cell(row=pre_rows, column=2).font = Font(bold=True)
-        ws.cell(row=pre_rows, column=3).value = "TOTAL_VALUE"
-        ws.cell(row=pre_rows, column=3).font = Font(bold=True)
-        ws.cell(row=pre_rows, column=4).value = "TOTAL_IMAGE"
+        ws.cell(row=pre_rows, column=3).value = "QRCODE2"
+        ws.cell(row=pre_rows, column=3).font = Font(bold=True)        
+        ws.cell(row=pre_rows, column=4).value = "TOTAL_VALUE"
         ws.cell(row=pre_rows, column=4).font = Font(bold=True)
-        ws.cell(row=pre_rows, column=5).value = "CROP_PATH"
-        ws.cell(row=pre_rows, column=5).font = Font(bold=True)                        
+        ws.cell(row=pre_rows, column=5).value = "TOTAL_IMAGE"
+        ws.cell(row=pre_rows, column=5).font = Font(bold=True)
+        ws.cell(row=pre_rows, column=6).value = "CROP_PATH"
+        ws.cell(row=pre_rows, column=6).font = Font(bold=True)                        
         # ws.cell(row=pre_rows, column=2).value = "BARCODE_1"
         # ws.cell(row=pre_rows, column=2).font = Font(bold=True)
         # ws.cell(row=pre_rows, column=3).value = "BARCODE_2"
@@ -43,7 +45,7 @@ def post_processing(vals, labels, filesNames,  temp_imgs, save_path):
         # ws.cell(row=pre_rows, column=7).font = Font(bold=True)
 
         pre_rows = pre_rows + 1
-        width = [40, 19, 10, 30, 40]
+        width = [40, 19, 19, 10, 30, 40]
         img_h, img_w = 25, 30
         thin_border = Border(left=Side(style='thin'), 
                     right=Side(style='thin'), 
@@ -66,12 +68,13 @@ def post_processing(vals, labels, filesNames,  temp_imgs, save_path):
         for k, v in enumerate(vals):
             try:
                 # QR1, QR2, Bar1, Bar2 = v[0]
-                QR = v[0]
+                QR1, QR2 = v[0]
                 cnt = cnt + 1
                 # cv2.imwrite(total_img_name, total_img)
                 filename = filesNames[k]
                 ws.cell(row=pre_rows, column=1).value = filename
-                ws.cell(row=pre_rows, column=2).value = QR
+                ws.cell(row=pre_rows, column=2).value = QR1
+                ws.cell(row=pre_rows, column=3).value = QR2
                 # try: ws.cell(row=pre_rows, column=2).value = Bar1
                 # except: ws.cell(row=pre_rows, column=2).value = "xxxxxxxx"
                 # try: ws.cell(row=pre_rows, column=3).value = Bar2
@@ -82,8 +85,8 @@ def post_processing(vals, labels, filesNames,  temp_imgs, save_path):
                 # ws.cell(row=pre_rows, column=4).value = 'Not_Reconized'
                 # try: ws.cell(row=pre_rows, column=5).value = QR2
                 # except: ws.cell(row=pre_rows, column=5).value = "xxxxxxxx"
-                ws.cell(row=pre_rows, column=3).value = labels[k][0]
-                ws.cell(row=pre_rows, column=5).value = temp_imgs + '/' + total_img_name[k]
+                ws.cell(row=pre_rows, column=4).value = labels[k][0]
+                ws.cell(row=pre_rows, column=6).value = temp_imgs + '/' + total_img_name[k]
                 img = Image(os.path.join(temp_imgs,total_img_name[k]))
                 im = cv2.imread(os.path.join(temp_imgs,total_img_name[k]), 0)
                 im = cv2.resize(im,(uiCellW, uiCellH), interpolation = cv2.INTER_CUBIC)
@@ -93,7 +96,7 @@ def post_processing(vals, labels, filesNames,  temp_imgs, save_path):
                     pW, pH = 0, pH+uiCellH
 
                 ###########################
-                col = 3
+                col = 4
                 row_cut = 9500
                 col_cut = 15000
                 
@@ -124,7 +127,7 @@ def post_processing(vals, labels, filesNames,  temp_imgs, save_path):
             ws.row_dimensions[i+1].height = img_h
             # row_no = row_no + 1
         for i in range(1, pre_rows):       
-            for j in range(1, 6):
+            for j in range(1, 7):
                 ws.cell(row=i, column=j).border = thin_border
         for i, wid in enumerate(width):
             ws.column_dimensions[get_column_letter(i+1)].width = wid
